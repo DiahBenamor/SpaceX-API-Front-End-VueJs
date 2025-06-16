@@ -1,24 +1,21 @@
 <template>
-  <div class="min-h-screen bg-gray-950 text-white p-6 space-y-10 overflow-x-hidden">
-
+  <div class="dashboard">
     <!-- Header -->
-    <div class="text-center">
-      <h1 class="text-4xl font-bold text-white">🚀 SpaceX Launch Dashboard</h1>
-      <p class="text-gray-400 text-sm mt-2">All launches, stats, and filters in one place</p>
-    </div>
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">🚀 SpaceX Launch Dashboard</h1>
+      <p class="dashboard-subtitle">Comprehensive launch statistics and mission details</p>
+    </header>
 
-    <!-- Filters and Sort -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex flex-wrap gap-2">
+    <!-- Controls -->
+    <div class="control-bar">
+      <div class="filter-group">
         <button
           v-for="type in ['all', 'success', 'failure', 'upcoming']"
           :key="type"
           @click="filters.status = type"
-          :class="[ 
-            'px-4 py-2 rounded-full text-sm font-semibold transition',
-            filters.status === type
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+          :class="[
+            'filter-button',
+            filters.status === type ? 'active' : ''
           ]"
         >
           {{ type }}
@@ -27,32 +24,29 @@
 
       <select
         v-model="filters.sort"
-        class="bg-gray-800 text-white px-4 py-2 rounded-md text-sm focus:outline-none focus:ring focus:ring-blue-500"
+        class="sort-select"
       >
         <option value="desc">Newest First</option>
         <option value="asc">Oldest First</option>
       </select>
     </div>
 
-    <!-- Stats Panel -->
-    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4">
-      <div
-        v-for="(value, key) in stats"
-        :key="key"
-        class="bg-gray-800 p-4 rounded-xl shadow text-center"
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div 
+        v-for="(value, key) in stats" 
+        :key="key" 
+        class="stat-card"
       >
-        <h3 class="text-gray-400 uppercase text-xs tracking-wider">{{ key }}</h3>
-        <p class="text-2xl font-bold mt-1">
+        <p class="stat-label">{{ key }}</p>
+        <p class="stat-value">
           {{ value }}<span v-if="key === 'successRate'">%</span>
         </p>
       </div>
     </div>
 
-    <!-- Launch Cards Grid -->
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-      style="width: 100%;"
-    >
+    <!-- Launches Grid -->
+    <div class="launches-grid">
       <LaunchCard
         v-for="launch in filteredLaunches"
         :key="launch.id"

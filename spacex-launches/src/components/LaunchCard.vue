@@ -1,34 +1,33 @@
 <template>
-  <div
-    class="bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden flex flex-col h-full max-w-[250px]"
-  >
-    <!-- Image -->
-    <div class="h-36 bg-gray-900 flex items-center justify-center p-4">
+  <div class="launch-card">
+    <div class="card-image-container">
       <img
         v-if="launch.links.patch.small"
         :src="launch.links.patch.small"
         alt="Mission Patch"
-        class="max-h-full max-w-full object-contain"
+        class="card-image"
+        loading="lazy"
       />
+      <div v-else class="no-image">
+        <span class="emoji">🛰️</span>
+      </div>
     </div>
 
-    <!-- Content -->
-    <div class="p-4 flex flex-col justify-between flex-grow">
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold truncate">{{ launch.name }}</h2>
-        <p class="text-sm text-gray-400">{{ new Date(launch.date_utc).toLocaleDateString() }}</p>
-      </div>
-
-      <div class="mt-4">
-        <span
-          class="inline-block px-2 py-1 text-xs font-medium rounded-full"
-          :class="{
-            'bg-green-500 text-white': launch.success,
-            'bg-red-500 text-white': launch.success === false,
-            'bg-yellow-400 text-black': launch.upcoming
-          }"
-        >
-          {{ launch.success ? 'Success' : launch.upcoming ? 'Upcoming' : 'Failure' }}
+    <div class="card-body">
+      <h3 class="card-title">{{ launch.name }}</h3>
+      <p class="card-date">
+        {{ new Date(launch.date_utc).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        }) }}
+      </p>
+      <div class="card-footer">
+        <span class="status-badge" :class="statusClass">
+          {{ statusText }}
+        </span>
+        <span class="flight-number">
+          #{{ launch.flight_number }}
         </span>
       </div>
     </div>
@@ -37,12 +36,24 @@
 
 <script>
 export default {
-  name: "LaunchCard",
   props: {
     launch: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-};
+  computed: {
+    statusText() {
+      if (this.launch.upcoming) return 'Upcoming'
+      return this.launch.success ? 'Success' : 'Failure'
+    },
+    statusClass() {
+      return {
+        'status-success': this.launch.success,
+        'status-failure': !this.launch.success && !this.launch.upcoming,
+        'status-upcoming': this.launch.upcoming
+      }
+    }
+  }
+}
 </script>
