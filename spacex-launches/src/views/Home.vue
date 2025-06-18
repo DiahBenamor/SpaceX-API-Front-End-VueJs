@@ -206,21 +206,26 @@ export default {
       return { total, success, failures, upcoming, successRate };
     },
     filteredLaunches() {
-      let list = [...this.launches];
-      const { status } = this.filters;
+  let list = [...this.launches];
+  const { status } = this.filters;
 
-      if (status === 'success') list = list.filter((l) => l.success);
-      else if (status === 'failure') list = list.filter((l) => l.success === false);
-      else if (status === 'upcoming') list = list.filter((l) => l.upcoming);
+  if (status === 'success') {
+    list = list.filter((l) => l.success);
+  } else if (status === 'failure') {
+    list = list.filter((l) => l.success === false);
+  } else if (status === 'upcoming') {
+    list = list.filter((l) => l.upcoming);
+  }
 
-      if (this.filters.sort === 'asc') {
-        list.sort((a, b) => new Date(a.date_utc) - new Date(b.date_utc));
-      } else {
-        list.sort((a, b) => new Date(b.date_utc) - new Date(a.date_utc));
-      }
+  if (this.filters.sort === 'asc') {
+    list.sort((a, b) => new Date(a.date_utc) - new Date(b.date_utc));
+  } else {
+    list.sort((a, b) => new Date(b.date_utc) - new Date(a.date_utc));
+  }
 
-      return list.slice(0, 10); // Only show 10 launches
-    },
+  // Only limit to 10 for upcoming launches
+  return status === 'upcoming' ? list.slice(0, 10) : list;
+},
     youtubeId() {
       if (!this.selectedLaunch?.links?.webcast) return null;
       const url = this.selectedLaunch.links.webcast;
